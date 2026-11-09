@@ -3,6 +3,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,3 +25,9 @@ jobs:
           path: |
             android/app/build/outputs/apk/debug/*.apk
             android/app/build/outputs/bundle/release/*.aab
+      - name: Save the store bundle to the "builds" branch (signed later, off GitHub)
+        run: |
+          mkdir -p /tmp/out && cp android/app/build/outputs/bundle/release/*.aab /tmp/out/comp-tracker-unsigned.aab
+          cd /tmp/out && git init -q -b builds && git add . \
+            && git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "AAB from ${GITHUB_SHA}" \
+            && git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" builds
