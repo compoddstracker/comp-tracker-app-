@@ -27,7 +27,7 @@ jobs:
             android/app/build/outputs/bundle/release/*.aab
       - name: Save the store bundle to the "builds" branch (signed later, off GitHub)
         run: |
-          mkdir -p /tmp/out && cp android/app/build/outputs/bundle/release/*.aab /tmp/out/comp-tracker-unsigned.aab
+          mkdir -p /tmp/out && cp android/app/build/outputs/bundle/release/*.aab /tmp/out/comp-tracker-unsigned.aab && cp android/app/build/outputs/apk/debug/*.apk /tmp/out/comp-tracker.apk
           cd /tmp/out && git init -q -b builds && git add . \
             && git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "AAB from ${GITHUB_SHA}" \
             && git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" builds
