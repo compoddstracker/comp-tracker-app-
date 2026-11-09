@@ -1,0 +1,14 @@
+{
+  "name": "comp-tracker-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Comp Tracker phone app: UK prize comps ranked by best odds, with Quick fill.",
+  "scripts": { "sync": "cap sync" },
+  "dependencies": {
+    "@capacitor/android": "8.6.0",
+    "@capacitor/core": "8.6.0",
+    "@capacitor/ios": "8.6.0",
+    "@capgo/inappbrowser": "8.6.14"
+  },
+  "devDependencies": { "@capacitor/cli": "8.6.0" }
+}

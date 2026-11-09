@@ -1,0 +1,14 @@
+{
+  "appId": "uk.co.compoddstracker.app",
+  "appName": "Comp Tracker",
+  "webDir": "www",
+  "server": {
+    "url": "https://compoddstracker.co.uk/?src=app",
+    "hostname": "compoddstracker.co.uk",
+    "androidScheme": "https",
+    "allowNavigation": ["compoddstracker.co.uk", "www.compoddstracker.co.uk"]
+  },
+  "backgroundColor": "#0c1220",
+  "android": { "backgroundColor": "#0c1220" },
+  "ios": { "backgroundColor": "#0c1220", "contentInset": "never" }
+}
