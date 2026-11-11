@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 jobs:
   testflight:
-    runs-on: macos-15
+    runs-on: macos-15-intel  # arm64 Macs were over capacity 11 Nov
     steps:
       - uses: actions/checkout@v4
       - name: Use the newest Xcode on the Mac (Apple needs a recent iOS SDK)
