@@ -1,0 +1,24 @@
+name: App Store screenshots
+on:
+  push:
+    branches: [store-shots-run]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm i --no-save playwright@1.48.2 && npx playwright install --with-deps chromium
+      - run: mkdir -p store/shots/out && node store/shots/take.js
+      - name: Save screenshots to branch store-shots
+        run: |
+          git config user.name "comp-tracker-bot"; git config user.email "bot@users.noreply.github.com"
+          git checkout --orphan store-shots
+          git rm -rq --cached .
+          git add -f store/shots/out/*.png
+          git commit -qm "App Store screenshots $(date -u +%F-%H%M)"
+          git push -f origin store-shots
