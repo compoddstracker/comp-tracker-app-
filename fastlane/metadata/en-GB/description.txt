@@ -2,6 +2,9 @@ FREE app. No sign-up.
 
 Comp Tracker checks 7,000+ UK prize competitions across 532 checked comp sites and shows you the ones with the best projected odds of winning. We've done the maths.
 
+Not just live numbers: projected odds
+Live ticket counts only tell you the odds right now. We also track how fast each comp is selling, hour by hour, and project how many will have sold by the draw. That gives you your likely odds when it actually closes, not just right now.
+
 How it works
 • We read live ticket sales from UK comp sites all day.
 • We work out your projected odds at the draw, from tickets sold so far and how fast they are selling.
