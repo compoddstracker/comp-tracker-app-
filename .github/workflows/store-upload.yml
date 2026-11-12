@@ -37,7 +37,7 @@ jobs:
           fastlane deliver --api_key_path $RUNNER_TEMP/asc.json \
             --app_identifier uk.co.compoddstracker.app --app_version 1.0 \
             --metadata_path fastlane/metadata --screenshots_path fastlane/screenshots \
-            --skip_binary_upload true --overwrite_screenshots true --force true \
+            --skip_binary_upload true --skip_metadata true --overwrite_screenshots true --force true \
             --run_precheck_before_submit false \
             --submit_for_review $SUBMIT --automatic_release true $EXTRA \
             --submission_information '{"add_id_info_uses_idfa": false, "export_compliance_uses_encryption": false}' 2>&1 | tee $RUNNER_TEMP/fl.log
