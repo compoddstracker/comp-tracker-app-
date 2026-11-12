@@ -1,0 +1,44 @@
+name: App Store listing upload
+# Push to branch store-upload-run to send the listing text + screenshots to App Store Connect.
+# Review contact details and notes are entered by hand in App Store Connect (kept out of this public repo).
+# Set store/submit.txt to "true" to also pick the newest build and submit for review.
+on:
+  push:
+    branches: [store-upload-run]
+  workflow_dispatch:
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get screenshots
+        run: |
+          git fetch -q origin store-shots
+          mkdir -p fastlane/screenshots/en-GB
+          git archive origin/store-shots store/shots/out | tar -x
+          cp store/shots/out/*.png fastlane/screenshots/en-GB/
+          ls -la fastlane/screenshots/en-GB
+      - uses: ruby/setup-ruby@v1
+        with: { ruby-version: '3.3' }
+      - run: gem install fastlane --no-document
+      - name: API key
+        env:
+          KID: ${{ secrets.ASC_KEY_ID }}
+          ISS: ${{ secrets.ASC_ISSUER_ID }}
+          P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          jq -n --arg k "$KID" --arg i "$ISS" --arg p "$P8" '{key_id:$k,issuer_id:$i,key:$p,in_house:false}' > $RUNNER_TEMP/asc.json
+      - name: Upload listing
+        run: |
+          SUBMIT=$(cat store/submit.txt 2>/dev/null || echo false)
+          EXTRA=""
+          if [ "$SUBMIT" = true ]; then EXTRA="--build_number latest"; fi
+          fastlane deliver --api_key_path $RUNNER_TEMP/asc.json \
+            --app_identifier uk.co.compoddstracker.app --app_version 1.0 \
+            --metadata_path fastlane/metadata --screenshots_path fastlane/screenshots \
+            --skip_binary_upload true --overwrite_screenshots true --force true \
+            --run_precheck_before_submit false \
+            --submit_for_review $SUBMIT --automatic_release true $EXTRA \
+            --submission_information '{"add_id_info_uses_idfa": false, "export_compliance_uses_encryption": false}'
+      - if: always()
+        run: rm -f $RUNNER_TEMP/asc.json
