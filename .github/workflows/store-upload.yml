@@ -16,7 +16,7 @@ jobs:
           git fetch -q origin store-shots
           mkdir -p fastlane/screenshots/en-GB
           git archive origin/store-shots store/shots/out | tar -x
-          cp store/shots/out/*.png fastlane/screenshots/en-GB/
+          cp store/shots/out/[1-5]-*.png fastlane/screenshots/en-GB/
           ls -la fastlane/screenshots/en-GB
       - uses: ruby/setup-ruby@v1
         with: { ruby-version: '3.3' }
