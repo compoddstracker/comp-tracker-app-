@@ -29,6 +29,7 @@ jobs:
         run: |
           jq -n --arg k "$KID" --arg i "$ISS" --arg p "$P8" '{key_id:$k,issuer_id:$i,key:$p,in_house:false}' > $RUNNER_TEMP/asc.json
       - name: Upload listing
+        shell: bash
         run: |
           SUBMIT=$(cat store/submit.txt 2>/dev/null || echo false)
           EXTRA=""
@@ -39,6 +40,9 @@ jobs:
             --skip_binary_upload true --overwrite_screenshots true --force true \
             --run_precheck_before_submit false \
             --submit_for_review $SUBMIT --automatic_release true $EXTRA \
-            --submission_information '{"add_id_info_uses_idfa": false, "export_compliance_uses_encryption": false}'
+            --submission_information '{"add_id_info_uses_idfa": false, "export_compliance_uses_encryption": false}' 2>&1 | tee $RUNNER_TEMP/fl.log
+          RC=${PIPESTATUS[0]}
+          { echo '```'; grep -v -i "key" $RUNNER_TEMP/fl.log | sed 's/\x1b\[[0-9;]*m//g' | tail -60; echo '```'; } >> $GITHUB_STEP_SUMMARY
+          exit $RC
       - if: always()
         run: rm -f $RUNNER_TEMP/asc.json
