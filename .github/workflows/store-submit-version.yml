@@ -1,0 +1,39 @@
+name: App Store new version submit
+# Push to branch store-submit-run to create the App Store version in store/version.txt,
+# attach the newest TestFlight build, add "What's New" text from fastlane/release-notes,
+# and submit it for review. Keeps the live listing text and screenshots as they are.
+on:
+  push:
+    branches: [store-submit-run]
+  workflow_dispatch:
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with: { ruby-version: '3.3' }
+      - run: gem install fastlane --no-document
+      - name: API key
+        env:
+          KID: ${{ secrets.ASC_KEY_ID }}
+          ISS: ${{ secrets.ASC_ISSUER_ID }}
+          P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          jq -n --arg k "$KID" --arg i "$ISS" --arg p "$P8" '{key_id:$k,issuer_id:$i,key:$p,in_house:false}' > $RUNNER_TEMP/asc.json
+      - name: Create version, attach newest build, submit
+        shell: bash
+        run: |
+          VER=$(cat store/version.txt)
+          fastlane deliver --api_key_path $RUNNER_TEMP/asc.json \
+            --app_identifier uk.co.compoddstracker.app --app_version "$VER" \
+            --metadata_path fastlane/release-notes --skip_screenshots true \
+            --skip_binary_upload true --force true --build_number latest \
+            --run_precheck_before_submit false \
+            --submit_for_review true --automatic_release true \
+            --submission_information '{"add_id_info_uses_idfa": false, "export_compliance_uses_encryption": false}' 2>&1 | tee $RUNNER_TEMP/fl.log
+          RC=${PIPESTATUS[0]}
+          { echo '```'; grep -v -i "key" $RUNNER_TEMP/fl.log | sed 's/\x1b\[[0-9;]*m//g' | tail -80; echo '```'; } >> $GITHUB_STEP_SUMMARY
+          exit $RC
+      - if: always()
+        run: rm -f $RUNNER_TEMP/asc.json
